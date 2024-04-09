@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         if(file.fieldname === "prodImage"){
-            cb(null,req.params.id + '-' + file.fieldname + '.png');
+            cb(null, Math.floor(Math.random() * 100000000) + '-' + file.fieldname + '.png');
         }
     }
 })

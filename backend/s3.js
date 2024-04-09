@@ -8,7 +8,7 @@ const s3= new S3({})
 
 //upload a file to S3
 function uploadFile(bucketName,file,folderPath=""){
-    const fileKey = folderPath?`${folderPath}/${Math.floor(Math.random * 10000000)}`: Math.floor(Math.random * 10000000).toString();
+    const fileKey = folderPath?`${folderPath}/${file.filename}`:file.filename;
     try{
         const fileStream = fs.createReadStream(file.path);
         const uploadParams = {

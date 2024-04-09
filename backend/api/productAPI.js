@@ -22,7 +22,7 @@ const pageMarginY = marginY + qrHeight + rowSpacing;
 
 router.post("/add-product", prodUpload, async (req, res) => {
     try {
-        const response = await s3.uploadFile(process.env.AWS_BUCKET_NAME,req.files.prodImage[0]) ; 
+        const response = await s3.uploadFile(process.env.AWS_BUCKET_NAME,req.files.prodImage[0]); 
         const {name,price,description,category,supplier,stock} = req.body;
         const newId = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
         const product = new ProductModel({

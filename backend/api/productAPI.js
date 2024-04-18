@@ -23,7 +23,15 @@ const pageMarginY = marginY + qrHeight + rowSpacing;
 router.post("/add-product", prodUpload, async (req, res) => {
     try {
         const response = await s3.uploadFile(process.env.AWS_BUCKET_NAME,req.files.prodImage[0]); 
-        const {name,price,description,category,supplier,stock} = req.body;
+        const { name,
+                price,
+                description,
+                category,
+                supplier,
+                stock,
+                expiry,
+                warranty
+            } = req.body;
         const newId = Math.floor(1000000000000000 + Math.random() * 9000000000000000);
         const product = new ProductModel({
             productId : newId,
@@ -33,6 +41,8 @@ router.post("/add-product", prodUpload, async (req, res) => {
             category,
             supplier,
             stock,
+            expiry,
+            warranty,
             imageUrl:response.Location
         });
         const qrCodes = [], products = [];
@@ -132,10 +142,21 @@ router.post("/buy-product/:customerId", prodUpload, async(req, res) => {
                 continue;
             }
             for(let j = 0; j < quantity; j++){
+                const purchaseDate = new Date().toUTCString();
                 product.stock -= 1;
                 const p = product.products.find((p) => p.customerId === null);
                 p.customerId = customerId;
-                p.purchaseDate = new Date().toUTCString();
+                p.purchaseDate = purchaseDate;
+                if(product.expiry !== null){
+                    let purchaseDateObj = new Date(purchaseDate);
+                    purchaseDateObj.setDate(purchaseDateObj.getDate() + product.expiry).toUTCString();;
+                    p.expiryDate = purchaseDateObj;
+                }
+                if(product.warranty !== null){
+                    let purchaseDateObj = new Date(purchaseDate);
+                    purchaseDateObj.setDate(purchaseDateObj.getDate() + product.warranty).toUTCString();;
+                    p.warrantyDate = purchaseDateObj;
+                }
             }
             product.save();
         }

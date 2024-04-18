@@ -4,7 +4,8 @@ const cors=require("cors");
 app.use(cors());
 
 const dotenv = require("dotenv");
-dotenv.config({ path: __dirname+'/.env' });
+dotenv.config({ path: __dirname +'/.env' });
+require("./cron jobs/cron");
 
 const mongoose = require("mongoose");
 mongoose.connect("mongodb+srv://veena:1234567890@cluster0.sp01vnb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {

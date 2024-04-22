@@ -122,7 +122,7 @@ const AddProductForm = () => {
             {loading && <Loader />}
             <Container>
                 <Row>
-                    <Col md={6}>
+                    <Col>
                         <Form onSubmit={handleSubmit}>
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="name">

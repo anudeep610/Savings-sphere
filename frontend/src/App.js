@@ -5,6 +5,7 @@ import Signup from "./pages/signup/signup";
 import Dashboard from "./pages/dashboard/dashboard";
 import QRScanner from "./pages/scanQR/scanner";
 import VerifyProduct from "./pages/verifyProduct/verifyProduct";
+import ViewCoupon from "./pages/view coupons customer/viewCoupon";
 
 function App() {
   return (
@@ -29,6 +30,11 @@ function App() {
         <Route
           path="/verify/:productId/:randomNumber/:customerId/:userName/:userType"
           element={<VerifyProduct />}
+        />
+
+        <Route
+          path="/view-coupons/:customerId/:userName/:userType"
+          element={<ViewCoupon />}
         />
       </Routes>
     </div>

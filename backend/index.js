@@ -22,9 +22,11 @@ app.use(express.urlencoded({ extended: true }));
 
 const authApi = require("./api/authAPI");
 const productApi = require("./api/productAPI");
+const couponApi = require("./api/coupon");
 
 app.use("/product", productApi);
 app.use("/auth", authApi);
+app.use("/coupon", couponApi);
 
 app.all("/*",(req,res)=>{
     return res.status(404).json({message:"page not found"});

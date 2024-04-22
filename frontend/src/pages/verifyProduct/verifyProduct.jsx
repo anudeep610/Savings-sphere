@@ -82,6 +82,7 @@ export default function VerifyProduct() {
                             {userType === "customer" && <Nav className="me-auto">
                                 <Nav.Item className='nav-item' onClick={() => navigate(`/scan/${customerId}`)}>Verify Product</Nav.Item>
                                 <Nav.Item className='nav-item' onClick={() => navigate(`/dashboard/${userType}/${customerId}/${userName}`)}>View Products</Nav.Item>
+                                <Nav.Item className='nav-item' onClick={() => navigate(`/view-coupons/${customerId}/${userName}/${userType}`)}>View Rewards</Nav.Item>
                             </Nav>}
                             <Navbar.Text className='nav-text'>
                                 Signed in as: {userName}

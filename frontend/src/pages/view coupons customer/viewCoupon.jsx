@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from "../../axios";
 import { useParams } from 'react-router-dom';
 import Loader from '../../components/loader/loader';
 import PopUp from '../../components/popup/popup';
-import { Container, Row, Col, Card, Navbar, Nav, Image } from 'react-bootstrap';
+import { Container, Row, Col, Card, Navbar, Nav } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
-import imageScratch from '../../images/gift.jpeg'
+import imageScratch1 from '../../images/6233915.jpg'
+import imageScratch2 from '../../images/9652987.jpg'
 import ScratchCard from '../../components/ScratchCard';
 
 export default function ViewCoupon() {
@@ -52,8 +53,16 @@ export default function ViewCoupon() {
         }
         : {};
 
-    const handleComplete = () => {
-        console.log('Scratch completed');
+    const handleComplete = async (id) => {
+        try {
+            const response = await axios.get(`/coupon/update-coupon/${id}`);
+            if (response.status === 200) {
+                setScratchedCoupons([...scratchedCoupons, unScratchedCoupons.find(coupon => coupon._id === id)]);
+                setUnScratchedCoupons(unScratchedCoupons.filter(coupon => coupon._id !== id));
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -86,17 +95,30 @@ export default function ViewCoupon() {
                     {unScratchedCoupons.length > 0 && (
                         unScratchedCoupons.map((coupon, index) => (
                             <Col xs={12} sm={6} md={3} xl={4} key={coupon._id}>
-                                <ScratchCard image={imageScratch} finishPercent={30} brushSize={20} onComplete={handleComplete}>
-                                        <Card className="coupon-card my-3">
-                                            <Card.Body style={{ flex: 1 }}>
-                                                <Card.Title>{coupon.couponName}</Card.Title>
-                                                <Card.Text>Coupon Code : {coupon._id}</Card.Text>
-                                            </Card.Body>
-                                        </Card>
+                                <ScratchCard image={imageScratch2} finishPercent={0.5} brushSize={20} onComplete={() => handleComplete(coupon._id)}>
+                                    <Card className="coupon-card my-3">
+                                        <Card.Img
+                                            style={{ objectFit: 'contain', flex: 1, overflow: 'hidden' }}
+                                            src={coupon.couponImageUrl}
+                                            alt={coupon.couponName}
+                                            className="coupon-image"
+                                        />
+                                        <Card.Body style={{ flex: 1 }}>
+                                            <Card.Title>{coupon.couponName}</Card.Title>
+                                            <Card.Text>Coupon Code : {coupon._id}</Card.Text>
+                                        </Card.Body>
+                                    </Card>
                                 </ScratchCard>
                             </Col>
                         ))
                     )}
+                    {
+                        unScratchedCoupons.length === 0 && (
+                            <Row>
+                                <p>Shop more to save more....</p>
+                            </Row>
+                        )
+                    }
                 </Row>
                 <Row>
                     <Col md={12} className='mt-4'>
@@ -122,7 +144,7 @@ export default function ViewCoupon() {
                     )}
                 </Row>
                 {
-                    scratchedCoupons.length === 0 && unScratchedCoupons.length === 0 && (
+                    scratchedCoupons.length === 0 && (
                         <Row>
                             <p>No coupons to display.....</p>
                         </Row>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const ScratchCard = ({ finishPercent, brushSize, onComplete, children }) => {
+const ScratchCard = ({ image, finishPercent, brushSize, onComplete, children }) => {
   const [isScratching, setIsScratching] = useState(false);
   const [scratchedAreas, setScratchedAreas] = useState([]);
   const canvasRef = useRef(null);
@@ -8,8 +8,12 @@ const ScratchCard = ({ finishPercent, brushSize, onComplete, children }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.onload = function () {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    img.src = image;
   }, []);
 
   useEffect(() => {
@@ -29,34 +33,44 @@ const ScratchCard = ({ finishPercent, brushSize, onComplete, children }) => {
       const percentScratched = alpha.filter(a => a === 0).length / alpha.length;
 
       if (percentScratched > finishPercent) {
-        onComplete();
+        const canvas = document.getElementById('scratch-card-canvas');
+        if (canvas) {
+          canvas.style.transition = 'opacity 2s ease-out';
+          canvas.style.opacity = '0';
+
+          setTimeout(() => {
+            if (canvas.parentNode) {
+              canvas.parentNode.removeChild(canvas);
+              onComplete();
+            }
+          }, 2000);
+        }
       }
     }
   }, [isScratching, scratchedAreas]);
 
   const handleMouseDown = () => {
-    console.log('down');
     setIsScratching(true);
   };
 
   const handleMouseUp = () => {
-    console.log('up');
     setIsScratching(false);
   };
 
   const handleMouseMove = (e) => {
-  if (isScratching) {
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setScratchedAreas([...scratchedAreas, { x, y }]);
-  }
-};
+    if (isScratching) {
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      setScratchedAreas([...scratchedAreas, { x, y }]);
+    }
+  };
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
       <canvas
+        id="scratch-card-canvas"
         ref={canvasRef}
         style={{
           width: '100%',

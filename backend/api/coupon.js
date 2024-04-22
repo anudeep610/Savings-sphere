@@ -80,4 +80,17 @@ router.get('/get-coupons/customer/:customerId', async(req, res) => {
     }
 });
 
+router.get('/update-coupon/:couponId', async(req, res) => {
+    try{
+        const couponId = new mongoose.Types.ObjectId(req.params.couponId);
+        const coupon = await Coupon.findOne({_id: couponId});
+        coupon.scratched = true;
+        await coupon.save();
+        res.status(200).json({message:"coupon updated successfully"});
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message:"something went wrong"});
+    }
+});
+
 module.exports = router;

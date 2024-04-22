@@ -7,8 +7,6 @@ import { Container, Row, Col, Card, Navbar, Nav, Image } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
-import authenticImage from "../../images/authentic.png";
-import "./verifyProduct.css"
 
 export default function VerifyProduct() {
     const navigate = useNavigate();

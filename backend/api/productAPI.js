@@ -135,31 +135,41 @@ router.post("/buy-product/:customerId", prodUpload, async(req, res) => {
     try{
         const productsToBuy = req.body.products;
         const customerId = req.params.customerId;
-        for(let i = 0; i < productsToBuy.length; i++){
-            const productId = productsToBuy[i].productId;
-            const quantity = productsToBuy[i].quantity;
-            const product = await ProductModel.findOne({productId:productId});
-            if(!product){
-                continue;
-            }
-            for(let j = 0; j < quantity; j++){
-                const purchaseDate = new Date().toUTCString();
+
+        const productQuantityMap = productsToBuy.reduce((map, product) => {
+            map[product.productId] = (map[product.productId] || 0) + product.quantity;
+            return map;
+        }, {});
+
+        const productIds = Object.keys(productQuantityMap);
+        const products = await ProductModel.find({ productId: { $in: productIds } });
+
+        for (let product of products) {
+            const quantity = productQuantityMap[product.productId];
+            const purchaseDate = new Date().toUTCString();
+
+            for (let i = 0; i < quantity; i++) {
                 product.stock -= 1;
                 const p = product.products.find((p) => p.customerId === null);
-                p.customerId = customerId;
-                p.purchaseDate = purchaseDate;
-                if(product.expiry !== null){
-                    let purchaseDateObj = new Date(purchaseDate);
-                    purchaseDateObj.setDate(purchaseDateObj.getDate() + product.expiry).toUTCString();;
-                    p.expiryDate = purchaseDateObj;
-                }
-                if(product.warranty !== null){
-                    let purchaseDateObj = new Date(purchaseDate);
-                    purchaseDateObj.setDate(purchaseDateObj.getDate() + product.warranty).toUTCString();;
-                    p.warrantyDate = purchaseDateObj;
+                if (p) {
+                    p.customerId = customerId;
+                    p.purchaseDate = purchaseDate;
+
+                    if (product.expiry !== null) {
+                        let purchaseDateObj = new Date(purchaseDate);
+                        purchaseDateObj.setDate(purchaseDateObj.getDate() + product.expiry);
+                        p.expiryDate = purchaseDateObj.toUTCString();
+                    }
+
+                    if (product.warranty !== null) {
+                        let purchaseDateObj = new Date(purchaseDate);
+                        purchaseDateObj.setDate(purchaseDateObj.getDate() + product.warranty);
+                        p.warrantyDate = purchaseDateObj.toUTCString();
+                    }
                 }
             }
-            product.save();
+
+            await product.save();
         }
 
         let coupon = null;

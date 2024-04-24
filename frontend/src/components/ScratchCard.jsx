@@ -32,19 +32,16 @@ const ScratchCard = ({ image, finishPercent, brushSize, onComplete, children }) 
       const alpha = Array.from(imageData.data).filter((_, i) => i % 4 === 3);
       const percentScratched = alpha.filter(a => a === 0).length / alpha.length;
 
-      if (percentScratched > finishPercent) {
-        const canvas = document.getElementById('scratch-card-canvas');
-        if (canvas) {
-          canvas.style.transition = 'opacity 2s ease-out';
-          canvas.style.opacity = '0';
+      if (percentScratched > finishPercent && canvas) {
+        canvas.style.transition = 'opacity 2s ease-out';
+        canvas.style.opacity = '0';
 
-          setTimeout(() => {
-            if (canvas.parentNode) {
-              canvas.parentNode.removeChild(canvas);
-              onComplete();
-            }
-          }, 2000);
-        }
+        setTimeout(() => {
+          if (canvas.parentNode) {
+            canvas.parentNode.removeChild(canvas);
+            onComplete();
+          }
+        }, 2000);
       }
     }
   }, [isScratching, scratchedAreas]);

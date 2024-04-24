@@ -94,15 +94,15 @@ export default function ViewCoupon() {
                 <Row>
                     {unScratchedCoupons.length > 0 && (
                         unScratchedCoupons.map((coupon, index) => (
-                            <Col xs={12} sm={6} md={3} xl={4} key={coupon._id}>
+                            <Col xs={12} sm={6} md={3} xl={3} key={coupon._id}>
                                 <ScratchCard image={imageScratch2} finishPercent={0.5} brushSize={20} onComplete={() => handleComplete(coupon._id)}>
                                     <Card className="coupon-card my-3">
-                                        <Card.Img
-                                            style={{ objectFit: 'contain', flex: 1, overflow: 'hidden' }}
+                                        {/* <Card.Img
+                                            style={{ objectFit: 'contain', flex: 1, overflow: 'hidden'}}
                                             src={coupon.couponImageUrl}
                                             alt={coupon.couponName}
                                             className="coupon-image"
-                                        />
+                                        /> */}
                                         <Card.Body style={{ flex: 1 }}>
                                             <Card.Title>{coupon.couponName}</Card.Title>
                                             <Card.Text>Coupon Code : {coupon._id}</Card.Text>
@@ -130,7 +130,7 @@ export default function ViewCoupon() {
                     {scratchedCoupons.length > 0 && (
                         scratchedCoupons.map((coupon, index) => (
                             <Col md={12} key={coupon._id}>
-                                <Card className="coupon-card my-3 d-flex flex-md-row" key={index}>
+                                <Card style={{height: '300px'}} className="coupon-card my-3 d-flex flex-md-row" key={index}>
                                     <Card.Img style={{ objectFit: 'contain', flex: 1, overflow: 'hidden' }} src={coupon.couponImageUrl} alt={coupon.couponName} className="coupon-image" />
                                     <Card.Body style={{ flex: 1 }}>
                                         <Card.Title>{coupon.couponName}</Card.Title>

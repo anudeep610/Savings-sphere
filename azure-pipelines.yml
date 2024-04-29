@@ -7,7 +7,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 jobs:
-- job: DeployToTest
+- job: Test
   displayName: 'Deploy to Test Environment'
   steps:
   - checkout: self
@@ -31,35 +31,3 @@ jobs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
       artifactName: 'deploy-artifacts'
     displayName: 'Publish Artifact'
-
-- deployment: DeployToTestApproval
-  displayName: 'Approve Deployment to Test'
-  dependsOn: DeployToTest
-  condition: succeeded()
-  pool:
-    vmImage: 'ubuntu-latest'
-  environment: 'Test'
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - download: current
-          artifact: 'deploy-artifacts'
-          displayName: 'Download Artifact'
-        # Add any necessary approval steps here before deployment to production
-
-- deployment: DeployToProd
-  displayName: 'Deploy to Production'
-  dependsOn: DeployToTestApproval
-  condition: succeeded()
-  pool:
-    vmImage: 'ubuntu-latest'
-  environment: 'Production'
-  strategy:
-    runOnce:
-      deploy:
-        steps:
-        - download: current
-          artifact: 'deploy-artifacts'
-          displayName: 'Download Artifact'
-        # Add steps to deploy to the Production environment

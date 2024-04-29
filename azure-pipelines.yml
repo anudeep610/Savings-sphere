@@ -7,27 +7,37 @@ pool:
   vmImage: 'ubuntu-latest'
 
 jobs:
-- job: Test
+- job: DeployToTest
   displayName: 'Deploy to Test Environment'
   steps:
   - checkout: self
+
   - task: NodeTool@0
     inputs:
       versionSpec: '14.x'
       displayName: 'Install Node.js'
     displayName: 'Install Node.js'
+
   - script: |
       cd backend
       npm install
       npm run build
     displayName: 'Build Backend'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)/backend'
+      artifactName: 'backend-artifact'
+    displayName: 'Publish Backend Artifact'
+
   - script: |
       cd ../frontend
       npm install
       npm run build
     displayName: 'Build Frontend'
+
   - task: PublishPipelineArtifact@1
     inputs:
-      targetPath: '$(Build.ArtifactStagingDirectory)'
-      artifactName: 'deploy-artifacts'
-    displayName: 'Publish Artifact'
+      targetPath: '$(Build.ArtifactStagingDirectory)/frontend'
+      artifactName: 'frontend-artifact'
+    displayName: 'Publish Frontend Artifact'

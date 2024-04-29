@@ -1,0 +1,65 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+jobs:
+- job: DeployToTest
+  displayName: 'Deploy to Test Environment'
+  steps:
+  - checkout: self
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '14.x'
+      displayName: 'Install Node.js'
+    displayName: 'Install Node.js'
+  - script: |
+      cd backend
+      npm install
+      npm run build
+    displayName: 'Build Backend'
+  - script: |
+      cd ../frontend
+      npm install
+      npm run build
+    displayName: 'Build Frontend'
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'deploy-artifacts'
+    displayName: 'Publish Artifact'
+
+- deployment: DeployToTestApproval
+  displayName: 'Approve Deployment to Test'
+  dependsOn: DeployToTest
+  condition: succeeded()
+  pool:
+    vmImage: 'ubuntu-latest'
+  environment: 'Test'
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - download: current
+          artifact: 'deploy-artifacts'
+          displayName: 'Download Artifact'
+        # Add any necessary approval steps here before deployment to production
+
+- deployment: DeployToProd
+  displayName: 'Deploy to Production'
+  dependsOn: DeployToTestApproval
+  condition: succeeded()
+  pool:
+    vmImage: 'ubuntu-latest'
+  environment: 'Production'
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - download: current
+          artifact: 'deploy-artifacts'
+          displayName: 'Download Artifact'
+        # Add steps to deploy to the Production environment
